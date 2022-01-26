@@ -8,7 +8,7 @@ export function Game() {
         <Canvas style={{
             width: '100%',
             height: '100%'
-        }}>
+        }} orthographic>
             <React.Suspense fallback={null}>
                 <Scene/>
             </React.Suspense>

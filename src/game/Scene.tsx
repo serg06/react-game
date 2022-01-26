@@ -5,6 +5,9 @@ import bricks from '../assets/bricks.png';
 import dirt from '../assets/dirt.png';
 import {KeyRules, KeyStates, useKeyState} from 'use-key-state';
 import {useKeyPress} from '../hooks/useKeyPress';
+import {store} from '../redux/store';
+import {RootData, rootSlice} from '../redux/reducers';
+import {useSelector} from 'react-redux';
 
 enum Direction {
     UP,
@@ -35,14 +38,17 @@ export function Scene() {
     const [pos, setPos] = useState<Vector3>(new Vector3(0, 0, 0));
     const [rotate, setRotate] = useState(false);
     const [direction, setDirection] = useState<Direction | undefined>(undefined);
+    // const paused = useSelector<RootData>(state => state.paused);
     const ref = useRef<Mesh>(null!);
 
     const keys = {
         w: useKeyPress('w'),
         a: useKeyPress('a'),
         s: useKeyPress('s'),
-        d: useKeyPress('d'),
+        d: useKeyPress('d')
     };
+
+    const esc = useKeyPress('esc');
 
     useEffect(() => {
         for (let k of Object.keys(keys)) {
@@ -55,6 +61,14 @@ export function Scene() {
         }
         setDirection(undefined);
     }, [keys]);
+
+    // useEffect(() => {
+    //     if (esc) {
+    //         store.dispatch(rootSlice.actions.update({
+    //             paused: !paused
+    //         }))
+    //     }
+    // }, [esc, paused]);
 
     // const rotation = new Euler(0, 0, 0);
     // const [rotation, setRotation] = useState<Euler>(new Euler(0, 0, 0));
@@ -79,25 +93,25 @@ export function Scene() {
     });
 
     colorMap.wrapS = colorMap.wrapT = RepeatWrapping;
-    colorMap.repeat.set(10, 10);
+    colorMap.repeat.set(100, 100);
 
     return (
         <>
             <ambientLight/>
             <pointLight position={[10, 10, 10]}/>
             <mesh
-                position={[0, 0, -5]}
+                position={[0, 0, -100]}
+            >
+                <planeGeometry args={[10000, 10000]}/>
+                <meshStandardMaterial map={colorMap}/>
+            </mesh>
+            <mesh
+                position={[0, 0, -32]}
                 onClick={() => setRotate(rotate_ => !rotate_)}
                 ref={ref}
             >
-                <sphereGeometry args={[1, 32, 32]}/>
+                <sphereGeometry args={[32, 32, 32]}/>
                 <meshStandardMaterial map={colorMap2}/>
-            </mesh>
-            <mesh
-                position={[0, 0, -10]}
-            >
-                <planeGeometry args={[100, 100]}/>
-                <meshStandardMaterial map={colorMap}/>
             </mesh>
         </>
     );
