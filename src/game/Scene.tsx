@@ -1,7 +1,7 @@
 import {useFrame, useLoader} from '@react-three/fiber';
 import React, {useEffect, useRef, useState} from 'react';
-import {Mesh, RepeatWrapping, TextureLoader, Vector3} from 'three';
-import bricks from '../assets/bricks.png';
+import {Euler, Mesh, RepeatWrapping, TextureLoader, Vector3} from 'three';
+import background from '../assets/bg54.jpg';
 import dirt from '../assets/dirt.png';
 import {KeyRules, KeyStates, useKeyState} from 'use-key-state';
 import {useKeyPress} from '../hooks/useKeyPress';
@@ -32,7 +32,7 @@ const directionToVector = {
 
 export function Scene() {
     const [colorMap, colorMap2] = useLoader(TextureLoader, [
-        bricks,
+        background,
         dirt
     ]);
     const [pos, setPos] = useState<Vector3>(new Vector3(0, 0, 0));
@@ -83,17 +83,17 @@ export function Scene() {
         if (direction !== undefined) {
             const {position, rotation} = ref.current;
             const vec = directionToVector[direction];
-            rotation.set(rotation.x + vec.x * delta * 10, rotation.y + vec.y * delta * 10, rotation.z + vec.z * delta * 10);
+            // rotation.set(rotation.x + vec.x * delta * 10, rotation.y + vec.y * delta * 10, rotation.z + vec.z * delta * 10);
             position.set(position.x + vec.x * delta * 10, position.y + vec.y * delta * 10, position.z + vec.z * delta * 10);
             camera.position.setX(position.x);
             camera.position.setY(position.y);
         } else {
-            console.log(false);
+            // console.log(false);
         }
     });
 
     colorMap.wrapS = colorMap.wrapT = RepeatWrapping;
-    colorMap.repeat.set(100, 100);
+    colorMap.repeat.set(10, 10);
 
     return (
         <>
@@ -106,11 +106,11 @@ export function Scene() {
                 <meshStandardMaterial map={colorMap}/>
             </mesh>
             <mesh
-                position={[0, 0, -32]}
+                position={[0, 0, 0]}
                 onClick={() => setRotate(rotate_ => !rotate_)}
                 ref={ref}
             >
-                <sphereGeometry args={[32, 32, 32]}/>
+                <circleGeometry args={[32, 32]}/>
                 <meshStandardMaterial map={colorMap2}/>
             </mesh>
         </>
