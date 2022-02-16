@@ -1,6 +1,6 @@
 import {useFrame, useLoader} from '@react-three/fiber';
 import React, {useEffect, useRef, useState} from 'react';
-import {Euler, Mesh, RepeatWrapping, TextureLoader, Vector3} from 'three';
+import {Euler, Mesh, RepeatWrapping, Texture, TextureLoader, Vector3} from 'three';
 import background from '../assets/bg54.jpg';
 import dirt from '../assets/dirt.png';
 import {KeyRules, KeyStates, useKeyState} from 'use-key-state';
@@ -8,6 +8,7 @@ import {useKeyPress} from '../hooks/useKeyPress';
 import {store} from '../redux/store';
 import {RootData, rootSlice} from '../redux/reducers';
 import {useSelector} from 'react-redux';
+import {scaleTexture} from '../utils/three';
 
 enum Direction {
     UP,
@@ -31,10 +32,13 @@ const directionToVector = {
 };
 
 export function Scene() {
-    const [colorMap, colorMap2] = useLoader(TextureLoader, [
+    const [colorMap, colorMap2] = useLoader<Texture, string[]>(TextureLoader, [
         background,
         dirt
     ]);
+
+    const scale = scaleTexture(colorMap, [10000, 10000]);
+
     const [pos, setPos] = useState<Vector3>(new Vector3(0, 0, 0));
     const [rotate, setRotate] = useState(false);
     const [direction, setDirection] = useState<Direction | undefined>(undefined);
@@ -79,12 +83,11 @@ export function Scene() {
         //     // const r = ref!.current!.rotation;
         //     // r.set(r.x + delta * 1000 * Math.PI/180, r.y, r.z);
         // }
-
         if (direction !== undefined) {
             const {position, rotation} = ref.current;
             const vec = directionToVector[direction];
             // rotation.set(rotation.x + vec.x * delta * 10, rotation.y + vec.y * delta * 10, rotation.z + vec.z * delta * 10);
-            position.set(position.x + vec.x * delta * 10, position.y + vec.y * delta * 10, position.z + vec.z * delta * 10);
+            position.set(position.x + vec.x * delta * 100, position.y + vec.y * delta * 100, position.z + vec.z * delta * 100);
             camera.position.setX(position.x);
             camera.position.setY(position.y);
         } else {
@@ -93,16 +96,15 @@ export function Scene() {
     });
 
     colorMap.wrapS = colorMap.wrapT = RepeatWrapping;
-    colorMap.repeat.set(10, 10);
+    colorMap.repeat.set(...scale.repeat);
 
     return (
         <>
-            <ambientLight/>
-            <pointLight position={[10, 10, 10]}/>
+            <ambientLight intensity={2.5}/>
             <mesh
-                position={[0, 0, -100]}
+                position={[0, 0, -10]}
             >
-                <planeGeometry args={[10000, 10000]}/>
+                <planeGeometry args={scale.dims}/>
                 <meshStandardMaterial map={colorMap}/>
             </mesh>
             <mesh
