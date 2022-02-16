@@ -1,13 +1,8 @@
 import {useFrame, useLoader} from '@react-three/fiber';
-import React, {useEffect, useRef, useState} from 'react';
-import {Euler, Mesh, RepeatWrapping, Texture, TextureLoader, Vector2, Vector3} from 'three';
+import React, {useRef} from 'react';
+import {Mesh, RepeatWrapping, Texture, TextureLoader, Vector2} from 'three';
 import background from '../assets/bg54.jpg';
 import dirt from '../assets/dirt.png';
-import {KeyRules, KeyStates, useKeyState} from 'use-key-state';
-import {useKeyPress} from '../hooks/useKeyPress';
-import {store} from '../redux/store';
-import {RootData, rootSlice} from '../redux/reducers';
-import {useSelector} from 'react-redux';
 import {scaleTexture} from '../utils/three';
 
 export function Scene() {
@@ -17,22 +12,7 @@ export function Scene() {
     ]);
 
     const scale = scaleTexture(colorMap, [100_000, 100_000]);
-
-    const [pos, setPos] = useState<Vector3>(new Vector3(0, 0, 0));
-    const [rotate, setRotate] = useState(false);
-    // const paused = useSelector<RootData>(state => state.paused);
     const ref = useRef<Mesh>(null!);
-
-    // useEffect(() => {
-    //     if (esc) {
-    //         store.dispatch(rootSlice.actions.update({
-    //             paused: !paused
-    //         }))
-    //     }
-    // }, [esc, paused]);
-
-    // const rotation = new Euler(0, 0, 0);
-    // const [rotation, setRotation] = useState<Euler>(new Euler(0, 0, 0));
 
     useFrame(({clock, camera, mouse}, delta) => {
         const {position} = ref.current;
@@ -56,7 +36,6 @@ export function Scene() {
             </mesh>
             <mesh
                 position={[0, 0, 0]}
-                onClick={() => setRotate(rotate_ => !rotate_)}
                 ref={ref}
             >
                 <circleGeometry args={[32, 32]}/>
